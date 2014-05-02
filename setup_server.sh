@@ -3,7 +3,7 @@
 # setup_server.sh - configure openvpn server
 #
 
-OPENVPN_ETC="./etc/"
+OPENVPN_ETC="/etc/openvpn/"
 SERVER_CERT="myserver"
 
 FILES="dh2048.pem ${SERVER_CERT}.crt server.conf setup_server.sh \
