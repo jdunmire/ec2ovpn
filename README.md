@@ -24,7 +24,6 @@ OpenVPN in the distro repository, and there is a Amazon Machine Image
 * [Configure Server](#setupServer)
 * [Configure Client](#setupClient)
   * [Ubuntu](#ubuntuClient)
-  * [Android](#androidClient)
 * [Stop/Start EC2 Instance](#startStop)
 
 <a name="preparation"></a>
@@ -225,12 +224,53 @@ and clean up.
 
 <a name="#ubuntuClient"></a>
 ### Ubuntu
+Install network-manager support for OpenVPN:
 
-<a name="#androidClient"></a>
-### Android
+    $ sudo apt-get install network-manager-openvpn-gnome
+
+You need the `client.ovpn` file and the
+`EasyRSA-2.2.2/keys/clientID.p12` files to setup up an new VPN
+connection.
+
+Starting at the `Network Icon` in the top bar, the add the new
+connection:
+
+    Network Icon->VPN Connections->Configure VPN->VPN->Add->Import
+
+Select the `client.ovpn` file. An `Editing client` dialog will appear.
+The `Gateway` field will have the DNS name (or IP address) for the
+OpenVPN server.
+
+Load the `clientID.p12` file as the `User Certificate`. The `CA
+Certificate` and the `Private Key` fields should automatically show
+`clientID.p12`.
+
+Now you need to enter the export password from [above](#clientCert) and
+then you will be able to click on the `Save` button.
+
+Enable and disable the VPN from the Network VPN Connnectons list:
+
+    Network Icon->VPN Connections
+
 
 <a name="#startStop"></a>
 ## Stop/Start EC2 Instance
+If you are not going to use the VPN for an extended period of time, and
+you _Free Tier_ at AWS has expired, you can save some money by stopping
+the EC2 instance. The smaller cost for EBS (Elastic Block Storage) will
+still accrue.
+
+When you restart the EC2 instance, the VPN will start automatically and
+the dynamic DNS service will be upated with the new IP address for the
+instance.
+
+If you terminate, rather than stop, the EC2 instance the file system
+storage on EBS will also be deleted. Now there will be no on-going
+charges assoicated with the VPN.
+
+To restart the VPN after the EC2 instance has been terminated, repeat
+the instructions above starting at [Launch EC2 Instance](#launchec2).
+
 
 ------------------
 [1]: http://arstechnica.com/security/2011/01/stay-safe-at-a-public-wi-fi-hotspot/ "arstechnica: How to stay safe at a public WiFi hotspot"
