@@ -53,7 +53,8 @@ Download a release tarball from
 https://github.com/OpenVPN/easy-rsa/releases. These instructions are
 for
 [v2.2.2](https://github.com/OpenVPN/easy-rsa/releases/tag/2.2.2)
-
+    
+    $ wget https://github.com/OpenVPN/easy-rsa/releases/download/2.2.2/EasyRSA-2.2.2.tgz
     $ tar -xzf EasyRSA-2.2.2.tgz
     $ cd EasyRSA-2.2.2/
 
@@ -67,9 +68,9 @@ unless you are going to be signing things for others.
     export KEY_CITY="Winston-Salem"
     export KEY_ORG="Example Company"
     export KEY_EMAIL="steve@example.com"
-    export KEY_OU=MyVPN
-    export KEY_NAME=MyVPN
-    export KEY_CN=MyVPN
+    export KEY_OU="MyVPN"
+    export KEY_NAME="MyVPN"
+    export KEY_CN="MyVPN"
 
 Now generate the master Certificate Authority (CA). The values you
 adjusted in the `vars` file will be the default answers to the questions
@@ -192,6 +193,31 @@ __Note__: you can also log onto the instance via ssh through the VPN
   
 <a name="#setupServer"></a>
 ## Configure Server
+Log on to the EC2 instance. Use either the public IP or the AWS DNS name.
+
+    local$ ssh ubunut@ec2XXXXXXXXXX.compute-1.amazonaws.com
+    Enter passphrase for key xxxxxxxxxxxxxxxxx:
+    Welcome to Ubuntu 14.04 LTS ...
+    ...
+    ubuntu@domU:~$ 
+
+Install OpenVPN:
+
+    ubuntu#domU:~$ sudo apt-get install openvpn
+
+Copy and install the configuration files on the server. Restart OpenVPN
+and clean up.
+
+    local$ ./pkg_server_files.sh
+    local$ scp server_files.tgz ubunut@ec2XXXXXXXXXX.compute-1.amazonaws.com:.
+    local$ ssh ubunut@ec2XXXXXXXXXX.compute-1.amazonaws.com
+    ubuntu@domU:~$ tar -xzf server_files.tgz
+    ubuntu@domU:~$ cd server_files
+    ubuntu@domU:~$ sudo ./setup_server.sh
+    ubuntu@domU:~$ sudo service openvpn restart
+    ubuntu@domU:~$ cd ..
+    ubuntu@domU:~$ rm -rf server_files/ server_files.tgz
+
 
 <a name="#setupClient"></a>
 ## Configure Client
