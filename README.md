@@ -6,7 +6,7 @@ simply search for `how to safely use public wifi`.
 
 This project sets up a VPN on an Amazon EC2 compute instance. The VPN is
 community edition of [OpenVPN][ovpn]. It will be deployed on
-[Ubuntu][ubunut]
+[Ubuntu][ubuntu]
 because I am familiar with Ubuntu, there are packaged versions of
 OpenVPN in the distro repository, and there is a Amazon Machine Image
 (AMI) for Ubuntu that is elible for the [AWS Free Usage Tier][awsfree].
@@ -29,7 +29,7 @@ OpenVPN in the distro repository, and there is a Amazon Machine Image
 
 <a name="preparation"></a>
 ## Preparation
-<a name="aws"><a/>
+<a name="aws"></a>
 ### AWS Account
 AWS account setup is not covered here, but is well documented at the
 [AWS web site](https://aws.amazon.com/). These links are good starting points:
@@ -37,7 +37,7 @@ AWS account setup is not covered here, but is well documented at the
   * [AWS Free Usage Tier](http://aws.amazon.com/free)
   * [Getting Started](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html)
 
-<a name="certs"/>
+<a name="certs"></a>
 ### Credentials
 [Easy-RSA][easyrsa] is used to create and sign the credentials. Easy-RSA
 is included in the openvpn package on Ubuntu 12.04. On Ubuntu 14.04 it
@@ -47,7 +47,7 @@ on the server itself. This project will create the credentials on your
 local host both to minimize the work on the server and to keep
 unnecessary sensitive files off the server.
 
-<a name="setupCA"/>
+<a name="setupCA"></a>
 #### Setup
 Download a release tarball from
 https://github.com/OpenVPN/easy-rsa/releases. These instructions are
@@ -81,7 +81,7 @@ asked by `./build-ca`.
 
 The resulting CA file is `keys/ca.crt`.
 
-<a name="serverCert"/>
+<a name="serverCert"></a>
 #### Server
 Next build the server certificate and the Diffie Hellman parameters
 file. `myserver` will be used to construct the file names for the
@@ -99,7 +99,7 @@ commit?` questions.
 The files your are going to use are: `keys/myserver.crt`,
 `keys/myserver.key`, and `keys/dh2048.pem`.
 
-<a name="clientCert"/>
+<a name="clientCert"></a>
 #### Client
 You will need at least one client certificate, but it is a good idea to
 use a different certificate for each of your computers and mobile
@@ -121,7 +121,7 @@ certificate requests certified, commit?` questions.
 There is only one file you will need: `keys/clientID.p12` where
 `clientID` is the argument you specified.
 
-<a name="DDNSHost"/>
+<a name="DDNSHost"></a>
 ### DDNS Hostname
 This is somewhat optional. If you don't want to setup a dynamic DNS host
 name, you can use an ElasticIP or even the public IP assigned when the
@@ -139,8 +139,8 @@ started. These scripts are specific to
 
 Use the fully qualified host
 name (circled in green) and the URL associated with the `DirectURL` link
-(circled in red) from the this table on the [freeDNS][freedns] [Dynamic
-DNS](http://freedns.afraid.org/dynamic/) page to configure `dynamicSetup.sh` and `client.ovpn`.
+(circled in red) from the this table on the [freeDNS][freedns]:[Dynamic
+DNS page](http://freedns.afraid.org/dynamic/) to configure `dynamicSetup.sh` and `client.ovpn`.
 
 ![alt text](DynamicDNSUpdateURLs.png)
 
@@ -149,25 +149,66 @@ DNS](http://freedns.afraid.org/dynamic/) page to configure `dynamicSetup.sh` and
 
   * Edit `client.ovpn` and replace `SERVER_DNS_OR_IP` with the fully qualified host name of your server
 
-<a name="launchec2"/>
-## Launch EC2 Instance
+<a name="sshkey"></a>
+### SSH Key
+You will need an SSH Key to login to the EC2 instance. The easiest thing
+to do is to import the you local default key (`~/.ssh/id_rsa.pub`) into
+your AWS account. If you don't have the `/.ssh/id_rsa.pub` file, then
+follow the instructions in this [article at
+GitHub](https://help.github.com/articles/generating-ssh-keys)
 
-* [Launch EC2 Instance](#launchec2)
-* [Configure Server](#setupServer)
-<a name="#setupServer"/>
+The instructions for importing your key are in the [AWS
+Documentation](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#how-to-generate-your-own-key-and-import-it-to-aws)
+
+
+<a name="launchec2"></a>
+## Launch EC2 Instance
+You are finally ready to launch you EC2 instance. If you haven't done
+this before, then it is worth your time work through the [AWS Getting
+Started](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html)
+example.
+
+These are the key configuration details:
+
+  * Select the `Ubuntu Server 14.04 LTS (PV), 64-bit` AMI
+  * Select a Micro Instance (`t1.micro`)
+  * Select the SSH key you imported [above](#sshkey)
+  * Configure the security group with a Custom UDP Rule for the OpenVPN
+    port:
+
+![alt text](EditInboundRules.png)
+
+The following are suggestions/guidelines that work well for me:
+
+  * Don’t leave the Name tag empty, set a name that will make it clear to you what will be running on the instance.
+  * Don’t reuse an existing security group. If you try to reuse security groups then you have to balance how the settings will effect each instance in the group.
+  * Don’t accept the default Security Group name and description. Make it clear that the security group is associated with the instance you are creating.
+  * The best security is to limit SSH access to only known IP addresses
+    (see the image above).
+
+__Note__: you can also log onto the instance via ssh through the VPN
+(just use the server address on the VPN subnet, typically 10.8.0.1),  so there is seldom a good reason to open the SSH access beyond your known IP addresses.
+
+  
+<a name="#setupServer"></a>
 ## Configure Server
-<a name="#setupClient"/>
+
+<a name="#setupClient"></a>
 ## Configure Client
-<a name="#ubuntuClient"/>
+
+<a name="#ubuntuClient"></a>
 ### Ubuntu
-<a name="#androidClient"/>
+
+<a name="#androidClient"></a>
 ### Android
-<a name="#startStop"/>
+
+<a name="#startStop"></a>
 ## Stop/Start EC2 Instance]
 
 ------------------
 [1]: http://arstechnica.com/security/2011/01/stay-safe-at-a-public-wi-fi-hotspot/ "arstechnica: How to stay safe at a public WiFi hotspot"
 [2]: http://consumerist.com/2008/10/06/the-idiot-proof-way-to-securely-use-public-wi-fi/ "Consumerist: The Idiot-Proof Way to Securely Use Public WiFi"
+[easyrsa]: https://github.com/OpenVPN/easy-rsa "Easy-RSA"
 [ovpn]: http://openvpn.net/index.php/open-source.html
 [ubuntu]: http://www.ubuntu.com/server
 [awsfree]: http://aws.amazon.com/free/
