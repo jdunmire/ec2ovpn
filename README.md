@@ -85,9 +85,10 @@ The resulting CA file is `keys/ca.crt`.
 <a name="serverCert"></a>
 #### Server
 Next build the server certificate and the Diffie Hellman parameters
-file. `myserver` will be used to construct the file names for the
-server certificate and key, if you use a differnet value you will need
-to modify the `server.conf` file.
+file. `myserver` is a literal argument that will be used to construct
+the file names for the server certificate and key. If you use a
+different value you will need to modify the `server.conf` file and the
+installation scripts.
 
 Accept defaults for all the values, leaving the _challenge password_ and
 _optional company name_ empty. You will have to answer `y` to the `Sign
@@ -181,9 +182,9 @@ These are the key configuration details:
 
 The following are suggestions/guidelines that work well for me:
 
-  * Don’t leave the Name tag empty, set a name that will make it clear to you what will be running on the instance.
-  * Don’t reuse an existing security group. If you try to reuse security groups then you have to balance how the settings will effect each instance in the group.
-  * Don’t accept the default Security Group name and description. Make it clear that the security group is associated with the instance you are creating.
+  * Do not leave the Name tag empty, set a name that will make it clear to you what will be running on the instance.
+  * Do not reuse an existing security group. If you try to reuse security groups then you have to balance how the settings will effect each instance in the group.
+  * Do not accept the default Security Group name and description. Make it clear that the security group is associated with the instance you are creating.
   * The best security is to limit SSH access to only known IP addresses
     (see the image above).
 
@@ -229,7 +230,7 @@ and clean up.
 ### Android
 
 <a name="#startStop"></a>
-## Stop/Start EC2 Instance]
+## Stop/Start EC2 Instance
 
 ------------------
 [1]: http://arstechnica.com/security/2011/01/stay-safe-at-a-public-wi-fi-hotspot/ "arstechnica: How to stay safe at a public WiFi hotspot"
